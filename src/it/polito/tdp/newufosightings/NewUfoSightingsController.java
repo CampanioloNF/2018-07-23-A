@@ -5,9 +5,11 @@
 package it.polito.tdp.newufosightings;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.newufosightings.model.Model;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -49,14 +51,47 @@ public class NewUfoSightingsController {
 	@FXML // fx:id="btnSimula"
 	private Button btnSimula; // Value injected by FXMLLoader
 
+	private int anno = 0;
+	
 	@FXML
 	void doCreaGrafo(ActionEvent event) {
 
+		txtResult.clear();
+		
+         try {
+			
+			if(anno==Integer.parseInt(txtAnno.getText())) {
+				
+				String forma = cmbBoxForma.getValue();
+				model.creaGrafo(anno, forma);
+				txtResult.appendText(model.getGraphConfiguration());
+			}
+			
+		}catch(NumberFormatException nfe) {
+			txtResult.appendText("Attenzione, inserire l'anno. Nel caso si volesse cambiare anno premere 'Seleziona anno'.");
+			return;
+		}
 	}
 
 	@FXML
 	void doSelezionaAnno(ActionEvent event) {
 
+		txtResult.clear();
+		
+		try {
+			
+			this.anno = Integer.parseInt(txtAnno.getText());
+			
+			List<String> shapes = model.getShapes(anno);
+			if(!shapes.isEmpty())
+			this.cmbBoxForma.setItems(FXCollections.observableList(shapes));
+			else
+				txtResult.appendText("Spiacenti.. nel "+anno+" non vi sono stati avvistamenti");
+		}catch(NumberFormatException nfe) {
+			txtResult.appendText("Attenzione, inserire un numero intero compreso tra 1910 e 2014");
+			return;
+		}
+		
 	}
 
 	@FXML
